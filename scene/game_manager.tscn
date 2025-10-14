@@ -1,0 +1,51 @@
+[gd_scene load_steps=5 format=3 uid="uid://cpw65ojsv65qu"]
+
+[ext_resource type="Script" uid="uid://dq3ipe8c5miwy" path="res://script/game_manager.gd" id="1_y6yp7"]
+[ext_resource type="Script" uid="uid://dgiohe3ofmxxg" path="res://script/service/map_manager.gd" id="2_a81tu"]
+[ext_resource type="PackedScene" uid="uid://cstvuiirfy0be" path="res://scene/maps/test_map.tscn" id="3_8cna3"]
+[ext_resource type="Script" uid="uid://e0aggd1b0ywj" path="res://scene/game_camera.gd" id="3_hy1te"]
+
+[node name="GameManager" type="Node2D" node_paths=PackedStringArray("map_manager")]
+texture_filter = 1
+script = ExtResource("1_y6yp7")
+map_manager = NodePath("MapManager")
+test_map = ExtResource("3_8cna3")
+
+[node name="Services" type="Node2D" parent="."]
+
+[node name="ActionManager" type="Node2D" parent="Services"]
+
+[node name="DeadEntityService" type="Node2D" parent="Services"]
+
+[node name="Pathfinding" type="Node2D" parent="Services"]
+
+[node name="Camera2D" type="Camera2D" parent="Services"]
+zoom = Vector2(2, 2)
+script = ExtResource("3_hy1te")
+
+[node name="MapManager" type="Node2D" parent="."]
+script = ExtResource("2_a81tu")
+
+[node name="OverlayLayer" type="TileMapLayer" parent="MapManager"]
+
+[node name="Entities" type="Node2D" parent="."]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="UIManager" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HUD" type="Control" parent="CanvasLayer/UIManager"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

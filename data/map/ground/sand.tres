@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="GroundType" load_steps=2 format=3 uid="uid://dv0iw662p1yue"]
+
+[ext_resource type="Script" uid="uid://dnkhh0x1hbodd" path="res://data/def/GroundType.gd" id="1_gw8qw"]
+
+[resource]
+script = ExtResource("1_gw8qw")
+name = "Sand"
+ground_accessible = true
+sea_accessible = false
+air_accessible = true
+obstructs_view = false
+metadata/_custom_type_script = "uid://dnkhh0x1hbodd"

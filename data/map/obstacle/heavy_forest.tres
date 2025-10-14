@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ObstacleType" load_steps=2 format=3 uid="uid://ga6auc6anuxc"]
+
+[ext_resource type="Script" uid="uid://bnfuqpwlw4mma" path="res://data/def/ObstacleType.gd" id="1_p2gf0"]
+
+[resource]
+script = ExtResource("1_p2gf0")
+name = "Heavy Forest"
+attack_multiplier = 0.9
+defense_multiplier = 1.5
+obstructs_view = true
+metadata/_custom_type_script = "uid://bnfuqpwlw4mma"

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://dg0akej0ibx51"]
+
+[ext_resource type="Script" uid="uid://c2klrp0gm0tt7" path="res://scene/entity/entity.gd" id="1_18sa5"]
+
+[node name="Entity" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_18sa5")

@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://ckntxenukrfwx"]
+
+[ext_resource type="PackedScene" uid="uid://m5d12yxfcti0" path="res://scene/entity/unit.tscn" id="1_k4qma"]
+[ext_resource type="Script" uid="uid://bkylu6x6blkt6" path="res://data/def/WeaponType.gd" id="2_6ata0"]
+
+[node name="InfantryFireteam" instance=ExtResource("1_k4qma")]
+defense = 10.0
+armor = 1.0
+weapons = Array[ExtResource("2_6ata0")]([])
+individual_count = 5
+individual_scene = null

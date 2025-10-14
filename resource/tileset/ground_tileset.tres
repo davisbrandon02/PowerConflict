@@ -1,0 +1,18 @@
+[gd_resource type="TileSet" load_steps=5 format=3 uid="uid://ca437tidutsvl"]
+
+[ext_resource type="Texture2D" uid="uid://dj5v4wuo2an63" path="res://asset/terrain/ground/grass.png" id="1_0b0jd"]
+[ext_resource type="Texture2D" uid="uid://cjssdvg8h70hi" path="res://asset/terrain/ground/sand.png" id="2_55pur"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hy1te"]
+resource_name = "grass"
+texture = ExtResource("1_0b0jd")
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_yyxvu"]
+resource_name = "sand"
+texture = ExtResource("2_55pur")
+0:0/0 = 0
+
+[resource]
+sources/0 = SubResource("TileSetAtlasSource_hy1te")
+sources/1 = SubResource("TileSetAtlasSource_yyxvu")

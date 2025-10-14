@@ -1,0 +1,44 @@
+[gd_scene load_steps=7 format=3 uid="uid://bj0x0jo1elf6b"]
+
+[ext_resource type="Script" uid="uid://cou6b6a3oahac" path="res://scene/entity/individual.gd" id="1_vjrkw"]
+[ext_resource type="Texture2D" uid="uid://byqte6w7wtnit" path="res://asset/unit/inf/infantry_right.png" id="2_ikqf4"]
+[ext_resource type="Texture2D" uid="uid://d4i5l0bomngks" path="res://asset/unit/inf/infantry_left.png" id="3_tk3tv"]
+[ext_resource type="Texture2D" uid="uid://d1xjcejm0xx6o" path="res://asset/unit/inf/infantry_down.png" id="4_qinpu"]
+[ext_resource type="Texture2D" uid="uid://be7ndr7dyxplj" path="res://asset/unit/inf/infantry_up.png" id="5_ma820"]
+[ext_resource type="Texture2D" uid="uid://cv7edk17md61a" path="res://asset/unit/inf/infantry_dead.png" id="6_oingk"]
+
+[node name="Individual" type="Node2D"]
+texture_filter = 1
+script = ExtResource("1_vjrkw")
+
+[node name="Sprites" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="RightSprite" type="Sprite2D" parent="Sprites"]
+unique_name_in_owner = true
+texture = ExtResource("2_ikqf4")
+centered = false
+
+[node name="LeftSprite" type="Sprite2D" parent="Sprites"]
+unique_name_in_owner = true
+visible = false
+texture = ExtResource("3_tk3tv")
+centered = false
+
+[node name="DownSprite" type="Sprite2D" parent="Sprites"]
+unique_name_in_owner = true
+visible = false
+texture = ExtResource("4_qinpu")
+centered = false
+
+[node name="UpSprite" type="Sprite2D" parent="Sprites"]
+unique_name_in_owner = true
+visible = false
+texture = ExtResource("5_ma820")
+centered = false
+
+[node name="DeadSprite" type="Sprite2D" parent="Sprites"]
+unique_name_in_owner = true
+visible = false
+texture = ExtResource("6_oingk")
+centered = false
