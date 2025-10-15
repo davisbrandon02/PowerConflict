@@ -14,3 +14,8 @@ config/name="PowerConflict"
 run/main_scene="uid://cpw65ojsv65qu"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="uid://bsxs8pr2yekui"
+
+[display]
+
+window/stretch/mode="viewport"
+window/stretch/aspect="expand"

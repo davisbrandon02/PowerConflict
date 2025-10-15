@@ -47,10 +47,43 @@ func load_map(map: PackedScene):
 		var pos = get_map_pos(u.position)
 		units.add_child(new_unit)
 		new_unit.set_current_position(pos)
-		current_map[pos].units.append(new_unit)
+		current_map[pos].unit = new_unit
 		
 		# Destroy the old unit
 		u.queue_free()
+
+# Set a unit's position on the map directly and update tracking
+func set_unit_pos(unit: Unit, new_pos: Vector2i) -> bool:
+	# Check if target position is occupied by another living unit
+	if current_map.has(new_pos) and current_map[new_pos].unit != null and current_map[new_pos].unit != unit:
+		if current_map[new_pos].unit.health > 0:
+			print("MAP: Cannot move %s to %s - tile occupied by %s" % [unit.entity_name, new_pos, current_map[new_pos].unit.entity_name])
+			return false
+	
+	# Clear the old position
+	var old_pos = unit.get_current_position()
+	if current_map.has(old_pos) and current_map[old_pos].unit == unit:
+		current_map[old_pos].unit = null
+	
+	# Set the new position
+	unit.set_current_position(new_pos)
+	
+	# Update the unit's visual position
+	var world_pos = %OverlayLayer.map_to_local(new_pos)
+	unit.position = world_pos
+	
+	# Update the map tracking
+	if current_map.has(new_pos):
+		current_map[new_pos].unit = unit
+	else:
+		# Create new tile if it doesn't exist (shouldn't happen normally)
+		var map_tile = MapTile.new()
+		map_tile.pos = new_pos
+		map_tile.unit = unit
+		current_map[new_pos] = map_tile
+	
+	print("MAP: Moved %s from %s to %s" % [unit.entity_name, old_pos, new_pos])
+	return true
 
 func get_map_pos(pos: Vector2):
 	return %OverlayLayer.local_to_map(pos)
@@ -60,4 +93,4 @@ class MapTile:
 	var pos: Vector2i
 	var ground: GroundType
 	var obstacle: Obstacle
-	var units: Array[Unit]
+	var unit: Unit

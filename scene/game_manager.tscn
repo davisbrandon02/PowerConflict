@@ -1,36 +1,61 @@
-[gd_scene load_steps=8 format=3 uid="uid://cpw65ojsv65qu"]
+[gd_scene load_steps=12 format=3 uid="uid://cpw65ojsv65qu"]
 
 [ext_resource type="Script" uid="uid://dq3ipe8c5miwy" path="res://script/game_manager.gd" id="1_y6yp7"]
 [ext_resource type="Script" uid="uid://dgiohe3ofmxxg" path="res://script/service/map_manager.gd" id="2_a81tu"]
+[ext_resource type="Script" uid="uid://5nblrmpv123e" path="res://script/service/action_manager.gd" id="3_05tyy"]
 [ext_resource type="PackedScene" uid="uid://cstvuiirfy0be" path="res://scene/maps/test_map.tscn" id="3_8cna3"]
 [ext_resource type="Script" uid="uid://e0aggd1b0ywj" path="res://scene/game_camera.gd" id="3_hy1te"]
 [ext_resource type="Script" uid="uid://d8bg5aldxcu6" path="res://script/service/input_controller.gd" id="4_hy1te"]
+[ext_resource type="Script" uid="uid://cg0rwv5gn63m2" path="res://script/service/pathfinding_service.gd" id="4_vknke"]
+[ext_resource type="Script" uid="uid://dd6wxfp5ykakd" path="res://script/service/ai/tactical_ai_service.gd" id="6_fi3ik"]
 [ext_resource type="Script" uid="uid://bp8nbuw5xrf2y" path="res://scene/ui/ui_manager.gd" id="6_yyxvu"]
+[ext_resource type="Script" uid="uid://c00crv8w8prhn" path="res://script/service/ai/unit_ai_service.gd" id="7_re6s4"]
 
 [sub_resource type="TileSet" id="TileSet_yyxvu"]
 
-[node name="GameManager" type="Node2D" node_paths=PackedStringArray("map_manager")]
+[node name="GameManager" type="Node2D" node_paths=PackedStringArray("map_manager", "action_manager")]
 texture_filter = 1
 script = ExtResource("1_y6yp7")
 map_manager = NodePath("MapManager")
 test_map = ExtResource("3_8cna3")
+action_manager = NodePath("Services/ActionManager")
 
 [node name="Services" type="Node2D" parent="."]
 
-[node name="ActionManager" type="Node2D" parent="Services"]
+[node name="ActionManager" type="Node2D" parent="Services" node_paths=PackedStringArray("game_manager", "ui_manager", "tactical_ai", "unit_ai")]
+script = ExtResource("3_05tyy")
+game_manager = NodePath("../..")
+ui_manager = NodePath("../../CanvasLayer/UIManager")
+tactical_ai = NodePath("../TacticalAIService")
+unit_ai = NodePath("../UnitAIService")
 
 [node name="DeadEntityService" type="Node2D" parent="Services"]
 
-[node name="Pathfinding" type="Node2D" parent="Services"]
+[node name="PathfindingService" type="Node2D" parent="Services" node_paths=PackedStringArray("map_manager")]
+script = ExtResource("4_vknke")
+map_manager = NodePath("../../MapManager")
 
 [node name="Camera2D" type="Camera2D" parent="Services"]
-zoom = Vector2(2, 2)
+zoom = Vector2(4, 4)
 script = ExtResource("3_hy1te")
 
 [node name="ControllerService" type="Node2D" parent="Services" node_paths=PackedStringArray("map_manager", "ui_manager")]
 script = ExtResource("4_hy1te")
 map_manager = NodePath("../../MapManager")
 ui_manager = NodePath("../../CanvasLayer/UIManager")
+
+[node name="TacticalAIService" type="Node2D" parent="Services" node_paths=PackedStringArray("game_manager", "map_manager", "pathfinding_service")]
+script = ExtResource("6_fi3ik")
+game_manager = NodePath("../..")
+map_manager = NodePath("../../MapManager")
+pathfinding_service = NodePath("../PathfindingService")
+
+[node name="UnitAIService" type="Node2D" parent="Services" node_paths=PackedStringArray("tactical_ai", "map_manager", "pathfinding_service", "action_manager")]
+script = ExtResource("7_re6s4")
+tactical_ai = NodePath("../TacticalAIService")
+map_manager = NodePath("../../MapManager")
+pathfinding_service = NodePath("../PathfindingService")
+action_manager = NodePath("../ActionManager")
 
 [node name="MapManager" type="Node2D" parent="." node_paths=PackedStringArray("obstacles", "units")]
 script = ExtResource("2_a81tu")
@@ -44,12 +69,14 @@ tile_set = SubResource("TileSet_yyxvu")
 [node name="Entities" type="Node2D" parent="."]
 
 [node name="Obstacles" type="Node2D" parent="Entities"]
+unique_name_in_owner = true
 
 [node name="Units" type="Node2D" parent="Entities"]
+unique_name_in_owner = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="UIManager" type="Control" parent="CanvasLayer"]
+[node name="UIManager" type="Control" parent="CanvasLayer" node_paths=PackedStringArray("action_manager")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -58,6 +85,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("6_yyxvu")
+action_manager = NodePath("../../Services/ActionManager")
 
 [node name="HUD" type="Control" parent="CanvasLayer/UIManager"]
 layout_mode = 1
@@ -74,9 +102,10 @@ layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -255.0
-offset_right = 288.0
-offset_bottom = -135.0
+offset_left = 10.0
+offset_top = -264.0
+offset_right = 298.0
+offset_bottom = -144.0
 grow_vertical = 0
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/UIManager/HUD/UnitInfoPanel"]
@@ -115,7 +144,7 @@ text = "Weapons:"
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
-text = "#, #, #"
+text = "#  #"
 
 [node name="TileInfoPanel" type="Panel" parent="CanvasLayer/UIManager/HUD"]
 unique_name_in_owner = true
@@ -123,8 +152,10 @@ layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_top = -120.0
-offset_right = 288.0
+offset_left = 10.0
+offset_top = -129.0
+offset_right = 298.0
+offset_bottom = -9.0
 grow_vertical = 0
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/UIManager/HUD/TileInfoPanel"]
@@ -164,37 +195,101 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Attack: #   Defense: #"
 
-[node name="UnitControls" type="HBoxContainer" parent="CanvasLayer/UIManager/HUD"]
+[node name="ControlPanel" type="Control" parent="CanvasLayer/UIManager/HUD"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -273.0
-offset_top = -96.0
-offset_right = 260.0
-offset_bottom = -32.0
+offset_left = -235.0
+offset_top = -154.0
+offset_right = 221.0
 grow_horizontal = 2
 grow_vertical = 0
+
+[node name="UnitWeapons" type="HBoxContainer" parent="CanvasLayer/UIManager/HUD/ControlPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -266.0
+offset_top = -152.0
+offset_right = 267.0
+offset_bottom = -88.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 10
 alignment = 1
 
-[node name="Button" type="Button" parent="CanvasLayer/UIManager/HUD/UnitControls"]
-custom_minimum_size = Vector2(64, 64)
+[node name="WeaponButton1" type="Button" parent="CanvasLayer/UIManager/HUD/ControlPanel/UnitWeapons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(192, 64)
 layout_mode = 2
+text = "Weapon (1)
+S: # | H: # | P: #"
 
-[node name="Button2" type="Button" parent="CanvasLayer/UIManager/HUD/UnitControls"]
-custom_minimum_size = Vector2(64, 64)
+[node name="WeaponButton2" type="Button" parent="CanvasLayer/UIManager/HUD/ControlPanel/UnitWeapons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(192, 64)
 layout_mode = 2
+text = "Weapon (2)
+S: # | H: # | P: #"
 
-[node name="Button3" type="Button" parent="CanvasLayer/UIManager/HUD/UnitControls"]
-custom_minimum_size = Vector2(64, 64)
-layout_mode = 2
+[node name="UnitControls" type="HBoxContainer" parent="CanvasLayer/UIManager/HUD/ControlPanel"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -266.0
+offset_top = -72.0
+offset_right = 267.0
+offset_bottom = -8.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 10
+alignment = 1
 
-[node name="Button4" type="Button" parent="CanvasLayer/UIManager/HUD/UnitControls"]
-custom_minimum_size = Vector2(64, 64)
+[node name="MoveButton" type="Button" parent="CanvasLayer/UIManager/HUD/ControlPanel/UnitControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 64)
 layout_mode = 2
+text = "Move
+(M)"
 
-[node name="Button5" type="Button" parent="CanvasLayer/UIManager/HUD/UnitControls"]
-custom_minimum_size = Vector2(64, 64)
+[node name="AttackButton" type="Button" parent="CanvasLayer/UIManager/HUD/ControlPanel/UnitControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 64)
 layout_mode = 2
+text = "Attack
+(Q)"
+
+[node name="HurryButton" type="Button" parent="CanvasLayer/UIManager/HUD/ControlPanel/UnitControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 64)
+layout_mode = 2
+text = "Hurry
+(F)"
+
+[node name="ReverseButton" type="Button" parent="CanvasLayer/UIManager/HUD/ControlPanel/UnitControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(72, 64)
+layout_mode = 2
+text = "Reverse
+(R)"
+
+[node name="EndTurnButton" type="Button" parent="CanvasLayer/UIManager/HUD/ControlPanel/UnitControls"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(128, 64)
+layout_mode = 2
+text = "End Turn
+(E)"
+
+[connection signal="pressed" from="CanvasLayer/UIManager/HUD/ControlPanel/UnitControls/EndTurnButton" to="CanvasLayer/UIManager" method="_on_end_turn_button_pressed"]

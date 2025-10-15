@@ -1,6 +1,8 @@
 class_name UIManager
 extends Control
 
+@export var action_manager: ActionManager
+
 # This function updates the entire UI based on the data of a single map tile.
 func show_tile_information(map_tile: MapManager.MapTile):
 	# Safety check: If the tile data is invalid, hide both panels.
@@ -49,29 +51,22 @@ func show_tile_information(map_tile: MapManager.MapTile):
 	# --- Handle Unit Information (UnitInfoPanel) ---
 	# --------------------------------------------------------------------------
 	
-	if not map_tile.units.is_empty():
+	if map_tile.unit != null:
 		%UnitInfoPanel.visible = true
-		var unit: Unit = map_tile.units[0] # Focus on the top unit
-
-		# Assumes Unit inherits 'name' from Entity base class.
+		var unit: Unit = map_tile.unit
+		
+		# Set unit name
 		%UnitNameLabel.text = unit.entity_name
 		
-		# Determine attack value from the equipped weapon (first one in the array).
-		var attack_value = "N/A"
-		if not unit.weapons.is_empty():
-			var equipped_weapon: WeaponType = unit.weapons[0]
-			attack_value = str(equipped_weapon.hard_damage)
-		
-		# Set the main stats line: "Attack: # Defense: # Armor: #"
-		%UnitStatsLabel.text = "Attack: %s Defense: %s Armor: %s" % [attack_value, unit.defense, unit.armor]
+		# Set the main stats line: "Initiative: # Defense: # Armor: #"
+		%UnitStatsLabel.text = "Initiative: %s Defense: %s Armor: %s" % [unit.initiative, unit.defense, unit.armor]
 		
 		%WeaponsHeader.visible = true
 		
 		# Create a detailed list of all weapons the unit possesses.
 		var weapon_info = []
 		for weapon in unit.weapons:
-			# Format: [Name] (S:X/H:Y/AP:Z)
-			var info_string = "%s (S:%s/H:%s/AP:%s)" % [weapon.name, weapon.soft_damage, weapon.hard_damage, weapon.armor_piercing]
+			var info_string = "%s  " % weapon.name
 			weapon_info.append(info_string)
 		
 		# Join each weapon's info string with a newline for a clean list.
@@ -79,3 +74,58 @@ func show_tile_information(map_tile: MapManager.MapTile):
 	else:
 		# Hide the entire unit panel if there are no units
 		%UnitInfoPanel.visible = false
+
+# This function sets and makes the controls visible for the active player-controlled unit.
+func show_unit_controls(unit: Unit):
+	# Show the control panel
+	%ControlPanel.visible = true
+	
+	# Update weapon buttons based on available weapons
+	if unit.weapons.size() > 0:
+		%WeaponButton1.text = "%s (1)\nS: %s | H: %s | P: %s" % [unit.weapons[0].name, unit.weapons[0].soft_damage, unit.weapons[0].hard_damage, unit.weapons[0].armor_piercing]
+		%WeaponButton1.visible = true
+	else:
+		%WeaponButton1.visible = false
+	
+	if unit.weapons.size() > 1:
+		%WeaponButton2.text = "%s (2)\nS: %s | H: %s | P: %s" % [unit.weapons[1].name, unit.weapons[1].soft_damage, unit.weapons[1].hard_damage, unit.weapons[1].armor_piercing]
+		%WeaponButton2.visible = true
+	else:
+		%WeaponButton2.visible = false
+	
+	# Enable the End Turn button
+	%EndTurnButton.visible = true
+	%EndTurnButton.disabled = false
+
+# Hide controls when no player unit is active
+func hide_unit_controls():
+	%ControlPanel.visible = false
+	%EndTurnButton.visible = false
+
+# Called when the End Turn button is pressed
+func _on_end_turn_button_pressed():
+	print("UI: End Turn button pressed")
+	if action_manager:
+		action_manager.end_current_turn()
+	else:
+		print("UI ERROR: ActionManager not connected to UIManager")
+
+# Input handling for keyboard shortcuts
+func _input(event):
+	if event is InputEventKey and event.pressed:
+		match event.keycode:
+			KEY_E:  # End Turn
+				if %EndTurnButton.visible and not %EndTurnButton.disabled:
+					_on_end_turn_button_pressed()
+			KEY_M:  # Move
+				print("Move command (M) pressed")
+				# Implement move mode
+			KEY_Q:  # Attack
+				print("Attack command (Q) pressed") 
+				# Implement attack mode
+			KEY_F:  # Hurry
+				print("Hurry command (F) pressed")
+				# Implement hurry action
+			KEY_R:  # Reverse
+				print("Reverse command (R) pressed")
+				# Implement reverse facing

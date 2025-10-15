@@ -1,14 +1,18 @@
-[gd_scene load_steps=6 format=3 uid="uid://m5d12yxfcti0"]
+[gd_scene load_steps=7 format=3 uid="uid://m5d12yxfcti0"]
 
 [ext_resource type="PackedScene" uid="uid://dg0akej0ibx51" path="res://scene/entity/entity.tscn" id="1_cxpt3"]
 [ext_resource type="Script" uid="uid://bcmge4cwtyvuf" path="res://scene/entity/unit.gd" id="2_gfi5q"]
 [ext_resource type="Texture2D" uid="uid://dj5v4wuo2an63" path="res://asset/terrain/ground/grass.png" id="3_bktw7"]
 [ext_resource type="Script" uid="uid://bkylu6x6blkt6" path="res://data/def/WeaponType.gd" id="3_d0opl"]
 [ext_resource type="PackedScene" uid="uid://bj0x0jo1elf6b" path="res://scene/entity/individual.tscn" id="4_bktw7"]
+[ext_resource type="Texture2D" uid="uid://banp1dg2r363a" path="res://asset/overlay/active.png" id="4_nb4h5"]
 
 [node name="Unit" instance=ExtResource("1_cxpt3")]
 script = ExtResource("2_gfi5q")
 face_dir = Vector2(1, 0)
+unit_type = 0
+movement_range = 10.0
+sight = 15.0
 defense = 10.0
 armor = 1.0
 weapons = Array[ExtResource("3_d0opl")]([])
@@ -18,12 +22,18 @@ individual_scene = null
 side = 0
 entity_name = "base_unit"
 
-[node name="Background(testing)" type="Sprite2D" parent="." index="0"]
+[node name="Active" type="Sprite2D" parent="." index="0"]
+unique_name_in_owner = true
+visible = false
+texture = ExtResource("4_nb4h5")
+centered = false
+
+[node name="Background(testing)" type="Sprite2D" parent="." index="1"]
 visible = false
 texture = ExtResource("3_bktw7")
 centered = false
 
-[node name="Individuals" type="Node2D" parent="." index="1"]
+[node name="Individuals" type="Node2D" parent="." index="2"]
 unique_name_in_owner = true
 
 [node name="Individual1" parent="Individuals" index="0" instance=ExtResource("4_bktw7")]

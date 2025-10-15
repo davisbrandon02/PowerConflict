@@ -5,8 +5,9 @@
 [resource]
 script = ExtResource("1_c20ow")
 name = "M4A1"
-soft_damage = 10.0
+soft_damage = 5.0
 hard_damage = 0.0
 armor_piercing = 1.0
 cooldown_turns = 1
+turns_to_target = 0
 metadata/_custom_type_script = "uid://bkylu6x6blkt6"

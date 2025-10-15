@@ -5,6 +5,7 @@ extends Resource
 # Can be small arms, tank guns, hellfire missiles, etc
 
 @export var name: String
+@export var range: float = 10.0
 @export var soft_damage: float = 10.0
 @export var hard_damage: float = 10.0
 @export var armor_piercing: float = 0.0
