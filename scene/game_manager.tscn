@@ -1,9 +1,13 @@
-[gd_scene load_steps=5 format=3 uid="uid://cpw65ojsv65qu"]
+[gd_scene load_steps=8 format=3 uid="uid://cpw65ojsv65qu"]
 
 [ext_resource type="Script" uid="uid://dq3ipe8c5miwy" path="res://script/game_manager.gd" id="1_y6yp7"]
 [ext_resource type="Script" uid="uid://dgiohe3ofmxxg" path="res://script/service/map_manager.gd" id="2_a81tu"]
 [ext_resource type="PackedScene" uid="uid://cstvuiirfy0be" path="res://scene/maps/test_map.tscn" id="3_8cna3"]
 [ext_resource type="Script" uid="uid://e0aggd1b0ywj" path="res://scene/game_camera.gd" id="3_hy1te"]
+[ext_resource type="Script" uid="uid://d8bg5aldxcu6" path="res://script/service/input_controller.gd" id="4_hy1te"]
+[ext_resource type="Script" uid="uid://bp8nbuw5xrf2y" path="res://scene/ui/ui_manager.gd" id="6_yyxvu"]
+
+[sub_resource type="TileSet" id="TileSet_yyxvu"]
 
 [node name="GameManager" type="Node2D" node_paths=PackedStringArray("map_manager")]
 texture_filter = 1
@@ -23,10 +27,19 @@ test_map = ExtResource("3_8cna3")
 zoom = Vector2(2, 2)
 script = ExtResource("3_hy1te")
 
-[node name="MapManager" type="Node2D" parent="."]
+[node name="ControllerService" type="Node2D" parent="Services" node_paths=PackedStringArray("map_manager", "ui_manager")]
+script = ExtResource("4_hy1te")
+map_manager = NodePath("../../MapManager")
+ui_manager = NodePath("../../CanvasLayer/UIManager")
+
+[node name="MapManager" type="Node2D" parent="." node_paths=PackedStringArray("obstacles", "units")]
 script = ExtResource("2_a81tu")
+obstacles = NodePath("../Entities/Obstacles")
+units = NodePath("../Entities/Units")
 
 [node name="OverlayLayer" type="TileMapLayer" parent="MapManager"]
+unique_name_in_owner = true
+tile_set = SubResource("TileSet_yyxvu")
 
 [node name="Entities" type="Node2D" parent="."]
 
@@ -44,6 +57,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("6_yyxvu")
 
 [node name="HUD" type="Control" parent="CanvasLayer/UIManager"]
 layout_mode = 1
@@ -55,6 +69,7 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="UnitInfoPanel" type="Panel" parent="CanvasLayer/UIManager/HUD"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -79,26 +94,31 @@ theme_override_constants/margin_bottom = 10
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UIManager/HUD/UnitInfoPanel/MarginContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/UIManager/HUD/UnitInfoPanel/MarginContainer/VBoxContainer"]
+[node name="UnitNameLabel" type="Label" parent="CanvasLayer/UIManager/HUD/UnitInfoPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Unit"
 
-[node name="Label2" type="Label" parent="CanvasLayer/UIManager/HUD/UnitInfoPanel/MarginContainer/VBoxContainer"]
+[node name="UnitStatsLabel" type="Label" parent="CanvasLayer/UIManager/HUD/UnitInfoPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Attack: #   Defense: #   Armor: #"
 
-[node name="Spacer2" type="Label" parent="CanvasLayer/UIManager/HUD/UnitInfoPanel/MarginContainer/VBoxContainer"]
+[node name="WeaponsHeader" type="Label" parent="CanvasLayer/UIManager/HUD/UnitInfoPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Weapons:"
 
-[node name="Spacer3" type="Label" parent="CanvasLayer/UIManager/HUD/UnitInfoPanel/MarginContainer/VBoxContainer"]
+[node name="WeaponsLabel" type="Label" parent="CanvasLayer/UIManager/HUD/UnitInfoPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "#, #, #"
 
 [node name="TileInfoPanel" type="Panel" parent="CanvasLayer/UIManager/HUD"]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
@@ -122,20 +142,24 @@ theme_override_constants/margin_bottom = 10
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/UIManager/HUD/TileInfoPanel/MarginContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="CanvasLayer/UIManager/HUD/TileInfoPanel/MarginContainer/VBoxContainer"]
+[node name="GroundTypeLabel" type="Label" parent="CanvasLayer/UIManager/HUD/TileInfoPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Ground"
 
-[node name="Label2" type="Label" parent="CanvasLayer/UIManager/HUD/TileInfoPanel/MarginContainer/VBoxContainer"]
+[node name="GroundStatsLabel" type="Label" parent="CanvasLayer/UIManager/HUD/TileInfoPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Attack: #   Defense: #"
 
-[node name="Label3" type="Label" parent="CanvasLayer/UIManager/HUD/TileInfoPanel/MarginContainer/VBoxContainer"]
+[node name="ObstacleNameLabel" type="Label" parent="CanvasLayer/UIManager/HUD/TileInfoPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 text = "Obstacle (HP%)"
 
-[node name="Spacer2" type="Label" parent="CanvasLayer/UIManager/HUD/TileInfoPanel/MarginContainer/VBoxContainer"]
+[node name="ObstacleStatsLabel" type="Label" parent="CanvasLayer/UIManager/HUD/TileInfoPanel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "Attack: #   Defense: #"

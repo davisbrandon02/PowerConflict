@@ -16,6 +16,7 @@ initiative = 1.0
 individual_count = 1
 individual_scene = null
 side = 0
+entity_name = "base_unit"
 
 [node name="Background(testing)" type="Sprite2D" parent="." index="0"]
 visible = false
@@ -27,24 +28,3 @@ unique_name_in_owner = true
 
 [node name="Individual1" parent="Individuals" index="0" instance=ExtResource("4_bktw7")]
 position = Vector2(7, 7)
-
-[node name="Individual2" parent="Individuals" index="1" instance=ExtResource("4_bktw7")]
-position = Vector2(2, 2)
-
-[node name="Individual3" parent="Individuals" index="2" instance=ExtResource("4_bktw7")]
-position = Vector2(2, 10)
-
-[node name="Individual4" parent="Individuals" index="3" instance=ExtResource("4_bktw7")]
-position = Vector2(8, 1)
-
-[node name="Individual5" parent="Individuals" index="4" instance=ExtResource("4_bktw7")]
-position = Vector2(4, 5)
-
-[node name="Individual6" parent="Individuals" index="5" instance=ExtResource("4_bktw7")]
-position = Vector2(10, 11)
-
-[node name="Individual7" parent="Individuals" index="6" instance=ExtResource("4_bktw7")]
-position = Vector2(0, 5)
-
-[node name="Individual8" parent="Individuals" index="7" instance=ExtResource("4_bktw7")]
-position = Vector2(10, 5)

@@ -13,4 +13,4 @@ config_version=5
 config/name="PowerConflict"
 run/main_scene="uid://cpw65ojsv65qu"
 config/features=PackedStringArray("4.4", "Forward Plus")
-config/icon="res://icon.svg"
+config/icon="uid://bsxs8pr2yekui"
