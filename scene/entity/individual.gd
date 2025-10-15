@@ -4,7 +4,6 @@ extends Node2D
 # Represents the sprites of individual units on the map
 # Don't actually have any game logic, just handles sprites
 
-var dead: bool = false # just represents whether the unit is currently "alive"
 var current_face_direction: Vector2 = Vector2.RIGHT
 @onready var face_mapping: Dictionary = {
 	Vector2.DOWN: %DownSprite,

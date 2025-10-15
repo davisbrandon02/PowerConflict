@@ -1,11 +1,35 @@
-[gd_scene load_steps=3 format=3 uid="uid://ckntxenukrfwx"]
+[gd_scene load_steps=5 format=3 uid="uid://ckntxenukrfwx"]
 
 [ext_resource type="PackedScene" uid="uid://m5d12yxfcti0" path="res://scene/entity/unit.tscn" id="1_k4qma"]
 [ext_resource type="Script" uid="uid://bkylu6x6blkt6" path="res://data/def/WeaponType.gd" id="2_6ata0"]
+[ext_resource type="Resource" uid="uid://bnd8tk572vhm4" path="res://data/weapon/m4a1.tres" id="3_85qrm"]
+[ext_resource type="PackedScene" uid="uid://b0gojehs8wnxx" path="res://data/scn/individual/infantry.tscn" id="4_nd1ej"]
 
 [node name="InfantryFireteam" instance=ExtResource("1_k4qma")]
-defense = 10.0
-armor = 1.0
-weapons = Array[ExtResource("2_6ata0")]([])
+weapons = Array[ExtResource("2_6ata0")]([ExtResource("3_85qrm")])
 individual_count = 5
-individual_scene = null
+individual_scene = ExtResource("4_nd1ej")
+
+[node name="Individual1" parent="Individuals" index="0"]
+modulate = Color(0.121569, 0.435294, 0.054902, 1)
+
+[node name="Individual2" parent="Individuals" index="1"]
+modulate = Color(0.121569, 0.435294, 0.054902, 1)
+
+[node name="Individual3" parent="Individuals" index="2"]
+modulate = Color(0.121569, 0.435294, 0.054902, 1)
+
+[node name="Individual4" parent="Individuals" index="3"]
+modulate = Color(0.121569, 0.435294, 0.054902, 1)
+
+[node name="Individual5" parent="Individuals" index="4"]
+modulate = Color(0.121569, 0.435294, 0.054902, 1)
+
+[node name="Individual6" parent="Individuals" index="5"]
+modulate = Color(0.121569, 0.435294, 0.054902, 1)
+
+[node name="Individual7" parent="Individuals" index="6"]
+modulate = Color(0.121569, 0.435294, 0.054902, 1)
+
+[node name="Individual8" parent="Individuals" index="7"]
+modulate = Color(0.121569, 0.435294, 0.054902, 1)

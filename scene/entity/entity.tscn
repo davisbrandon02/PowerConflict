@@ -1,7 +1,22 @@
-[gd_scene load_steps=2 format=3 uid="uid://dg0akej0ibx51"]
+[gd_scene load_steps=4 format=3 uid="uid://dg0akej0ibx51"]
 
 [ext_resource type="Script" uid="uid://c2klrp0gm0tt7" path="res://scene/entity/entity.gd" id="1_18sa5"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_18sa5"]
+bg_color = Color(0.423185, 9.08468e-07, 3.1285e-07, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rr6s2"]
+bg_color = Color(0, 0.325331, 2.88785e-07, 1)
 
 [node name="Entity" type="Node2D"]
 texture_filter = 1
 script = ExtResource("1_18sa5")
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+unique_name_in_owner = true
+visible = false
+offset_top = -2.0
+offset_right = 16.0
+theme_override_styles/background = SubResource("StyleBoxFlat_18sa5")
+theme_override_styles/fill = SubResource("StyleBoxFlat_rr6s2")
+show_percentage = false

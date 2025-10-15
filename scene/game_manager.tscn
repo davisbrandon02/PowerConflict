@@ -30,6 +30,10 @@ script = ExtResource("2_a81tu")
 
 [node name="Entities" type="Node2D" parent="."]
 
+[node name="Obstacles" type="Node2D" parent="Entities"]
+
+[node name="Units" type="Node2D" parent="Entities"]
+
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="UIManager" type="Control" parent="CanvasLayer"]

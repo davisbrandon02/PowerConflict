@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://bxb0psgasecmc"]
+
+[ext_resource type="PackedScene" uid="uid://dyy7opmf3mkys" path="res://scene/entity/obstacle.tscn" id="1_c5sww"]
+
+[node name="Forest" instance=ExtResource("1_c5sww")]
+obstacle_name = "Forest"
+defense_multiplier = 1.25

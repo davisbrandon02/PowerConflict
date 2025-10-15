@@ -9,3 +9,6 @@ extends Resource
 @export var hard_damage: float = 10.0
 @export var armor_piercing: float = 0.0
 @export var cooldown_turns: int = 1
+
+# Used if shot takes multiple turns to reach target. Ex: mortars/artillery
+@export var turns_to_target: int = 0

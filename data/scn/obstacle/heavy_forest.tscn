@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://b0u4ulrr1r2me"]
+
+[ext_resource type="PackedScene" uid="uid://dyy7opmf3mkys" path="res://scene/entity/obstacle.tscn" id="1_fyddg"]
+[ext_resource type="Texture2D" uid="uid://1skabx2oxl2" path="res://asset/terrain/obstacle/heavy_forest.png" id="2_j4qx0"]
+
+[node name="HeavyForest" instance=ExtResource("1_fyddg")]
+obstacle_name = "Heavy Forest"
+attack_multiplier = 0.75
+defense_multiplier = 1.5
+obstructs_view = true
+
+[node name="Sprite" parent="." index="0"]
+texture = ExtResource("2_j4qx0")

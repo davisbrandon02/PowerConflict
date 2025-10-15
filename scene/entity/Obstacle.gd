@@ -1,10 +1,15 @@
 class_name Obstacle
 extends Entity
 
-# Physical obstacle on the map
-var type: ObstacleType
+@export var obstacle_name: String
 
-func set_obstacle_type(_type: ObstacleType):
-	type = _type
-	health = _type.max_health
-	max_health = _type.max_health
+# Physical obstacle on the map
+@export var attack_multiplier: float = 1.0
+@export var defense_multiplier: float = 1.0
+
+# Movement and sight properties
+@export var ground_accessible: bool = true
+@export var sea_accessible: bool = false
+@export var air_accessible: bool = true
+@export var obstructs_ground_view: bool = false
+@export var obstructs_air_view: bool = false

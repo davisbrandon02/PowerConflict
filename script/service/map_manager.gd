@@ -14,7 +14,6 @@ func load_map(map: PackedScene):
 	# Load ground tiles
 	var init: Node2D = map.instantiate()
 	var ground_layer: TileMapLayer = init.get_child(0)
-	var obstacle_layer: TileMapLayer = init.get_child(1)
 	
 	add_child(init)
 	

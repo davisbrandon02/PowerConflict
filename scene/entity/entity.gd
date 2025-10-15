@@ -9,3 +9,9 @@ var current_position: Vector2i # Set by map manager
 
 func get_health_percentage() -> float:
 	return float(health) / float(max_health)
+
+func damage(weapon: WeaponType):
+	health -= weapon.soft_damage
+	health -= weapon.hard_damage
+	%HealthBar.max_value = max_health
+	%HealthBar.value = health
