@@ -47,19 +47,34 @@ func find_path(start: Vector2i, end: Vector2i, unit_type: Unit.UNIT_TYPE) -> Arr
 	if not is_position_walkable(end, unit_type):
 		# Target is unwalkable, find nearest walkable position
 		var fallback_target = find_nearest_walkable_position(end, unit_type)
-		if fallback_target == start:
-			return []  # No path possible
-		return find_path(start, fallback_target, unit_type)
+		
+		# Prevent infinite recursion - if fallback is same as start or unwalkable, return empty
+		if fallback_target == start or not is_position_walkable(fallback_target, unit_type):
+			return []
+		
+		# Use iterative approach instead of recursive
+		if not point_ids.has(start) or not point_ids.has(fallback_target):
+			return []
+		
+		var start_id = point_ids[start]
+		var end_id = point_ids[fallback_target]
+		var path_positions = astar.get_point_path(start_id, end_id)
+		
+		# Convert from Vector2 to Vector2i
+		var path = []
+		for pos in path_positions:
+			path.append(Vector2i(pos))
+		
+		return path
 	
+	# Original pathfinding for walkable targets
 	if not point_ids.has(start) or not point_ids.has(end):
 		return []
 	
 	var start_id = point_ids[start]
 	var end_id = point_ids[end]
-	
 	var path_positions = astar.get_point_path(start_id, end_id)
 	
-	# Convert from Vector2 to Vector2i
 	var path = []
 	for pos in path_positions:
 		path.append(Vector2i(pos))
@@ -180,6 +195,8 @@ func get_movement_cost(from: Vector2i, to: Vector2i, unit_type: Unit.UNIT_TYPE) 
 		return 999  # Unwalkable
 	
 	var tile = map_manager.current_map[to]
+	
+	# Add null checks for tile properties
 	var base_cost = 1
 	
 	# Add terrain cost modifiers
@@ -201,16 +218,17 @@ func has_line_of_sight(from: Vector2i, to: Vector2i, unit_type: Unit.UNIT_TYPE) 
 	for i in range(1, line_points.size()):  # Skip first point (viewer's position)
 		var point = line_points[i]
 		
+		# CRITICAL: Check if the tile exists and has data
 		if not map_manager.current_map.has(point):
 			return false
 		
 		var tile = map_manager.current_map[point]
 		
-		# Check ground obstruction
+		# Check ground obstruction (with null safety)
 		if tile.ground and tile.ground.obstructs_view:
 			return false
 		
-		# Check obstacle obstruction based on unit type
+		# Check obstacle obstruction based on unit type (with null safety)
 		if tile.obstacle:
 			match unit_type:
 				Unit.UNIT_TYPE.INFANTRY, Unit.UNIT_TYPE.LOADED_MECH:
@@ -228,7 +246,7 @@ func has_line_of_sight(from: Vector2i, to: Vector2i, unit_type: Unit.UNIT_TYPE) 
 
 # Bresenham's line algorithm for LOS checking
 func get_line_points(from: Vector2i, to: Vector2i) -> Array[Vector2i]:
-	var points = []
+	var points: Array[Vector2i] = []
 	var dx = absi(to.x - from.x)
 	var dy = -absi(to.y - from.y)
 	var sx = 1 if from.x < to.x else -1

@@ -4,7 +4,6 @@ extends Node2D
 # The AI General - makes high-level decisions for each team
 @export var game_manager: GameManager
 @export var map_manager: MapManager
-@export var pathfinding_service: PathfindingService
 
 var current_orders: Dictionary = {}  # unit_id -> TacticalOrder
 var team_objectives: Dictionary = {}  # team_id -> Array[Vector2i]
@@ -31,7 +30,6 @@ func plan_team_strategy(team_id: int) -> void:
 
 func create_unit_order(unit: Unit, friendly_units: Array[Unit], enemy_units: Array[Unit]) -> TacticalOrder:
 	var visible_enemies = get_visible_enemies(unit)
-	var unit_pos = unit.get_current_position()
 	
 	# Determine unit role based on type
 	var role = get_unit_role(unit)
@@ -53,7 +51,6 @@ func get_unit_role(unit: Unit) -> String:
 	return "general"
 
 func handle_combat_situation(unit: Unit, visible_enemies: Array[Unit], friendly_units: Array[Unit], role: String) -> TacticalOrder:
-	var unit_pos = unit.get_current_position()
 	var closest_enemy = get_closest_enemy(unit, visible_enemies)
 	var enemy_pos = closest_enemy.get_current_position()
 	
@@ -64,43 +61,34 @@ func handle_combat_situation(unit: Unit, visible_enemies: Array[Unit], friendly_
 	match role:
 		"assault":
 			if threat_level > 0.7 and not has_support:
-				# Fall back to cover
 				var fallback_pos = find_fallback_position(unit, visible_enemies)
 				return TacticalOrder.new(TacticalOrder.OrderType.RETREAT, fallback_pos, 0.2)
 			else:
-				# Advance to engage
 				return TacticalOrder.new(TacticalOrder.OrderType.ASSAULT, enemy_pos, 0.8)
 		
 		"support":
-			# Find good suppression position
 			var suppression_pos = find_suppression_position(unit, enemy_pos)
 			return TacticalOrder.new(TacticalOrder.OrderType.SUPPRESS, suppression_pos, 0.6)
 		
 		"heavy_assault":
-			# Mech units can push forward aggressively
 			var advance_pos = calculate_advance_position(unit, enemy_pos)
 			return TacticalOrder.new(TacticalOrder.OrderType.ADVANCE, advance_pos, 0.9)
 	
-	# Default fallback
-	return TacticalOrder.new(TacticalOrder.OrderType.DEFEND, unit_pos, 0.5)
+	return TacticalOrder.new(TacticalOrder.OrderType.DEFEND, unit.get_current_position(), 0.5)
 
 func handle_non_combat_situation(unit: Unit, enemy_units: Array[Unit], friendly_units: Array[Unit], role: String) -> TacticalOrder:
 	var primary_objective = get_primary_objective(unit.side)
-	var unit_pos = unit.get_current_position()
 	
 	match role:
 		"assault":
-			# Infantry advances cautiously
 			var advance_pos = get_advance_position_toward_objective(unit, primary_objective)
 			return TacticalOrder.new(TacticalOrder.OrderType.ADVANCE, advance_pos, 0.4)
 		
 		"support":
-			# Support units hold strategic positions
 			var defend_pos = find_defensive_position(unit, primary_objective)
 			return TacticalOrder.new(TacticalOrder.OrderType.DEFEND, defend_pos, 0.3)
 		
 		"heavy_assault":
-			# Mechs provide forward presence
 			var recon_pos = get_recon_position(unit, enemy_units)
 			return TacticalOrder.new(TacticalOrder.OrderType.RECON, recon_pos, 0.6)
 	
@@ -122,20 +110,7 @@ func get_enemy_units(team_id: int) -> Array[Unit]:
 	return units
 
 func get_visible_enemies(unit: Unit) -> Array[Unit]:
-	var enemies: Array[Unit] = []
-	for other_unit in map_manager.units.get_children():
-		if other_unit.side != unit.side and other_unit.health > 0:
-			var distance = unit.get_current_position().distance_to(other_unit.get_current_position())
-			if distance <= unit.sight and has_line_of_sight(unit, other_unit):
-				enemies.append(other_unit)
-	return enemies
-
-func has_line_of_sight(unit: Unit, target: Unit) -> bool:
-	# Use your existing LOS implementation
-	var from_pos = unit.get_current_position()
-	var to_pos = target.get_current_position()
-	# This would call your detailed LOS checking function
-	return true  # Placeholder
+	return map_manager.get_visible_enemies(unit)
 
 func get_closest_enemy(unit: Unit, enemies: Array[Unit]) -> Unit:
 	var closest = null
@@ -151,10 +126,9 @@ func assess_threat_level(unit: Unit, enemies: Array[Unit]) -> float:
 	var total_threat = 0.0
 	for enemy in enemies:
 		var distance = unit.get_current_position().distance_to(enemy.get_current_position())
-		var weapon_threat = 1.0  # Could factor in enemy weapon strength
-		var threat = weapon_threat / (distance + 1.0)
+		var threat = 1.0 / (distance + 1.0)
 		total_threat += threat
-	return min(total_threat / 3.0, 1.0)  # Normalize to 0-1
+	return min(total_threat / 3.0, 1.0)
 
 func has_nearby_support(unit: Unit, friendly_units: Array[Unit]) -> bool:
 	for friendly in friendly_units:
@@ -165,7 +139,6 @@ func has_nearby_support(unit: Unit, friendly_units: Array[Unit]) -> bool:
 	return false
 
 func update_team_objectives(team_id: int, friendly_units: Array[Unit], enemy_units: Array[Unit]):
-	# Simple objective setting - could be much more sophisticated
 	if enemy_units.size() > 0:
 		var avg_enemy_pos = Vector2i.ZERO
 		for enemy in enemy_units:
@@ -173,39 +146,32 @@ func update_team_objectives(team_id: int, friendly_units: Array[Unit], enemy_uni
 		avg_enemy_pos /= enemy_units.size()
 		team_objectives[team_id] = [avg_enemy_pos]
 	else:
-		# Default objective - center of map or strategic point
 		team_objectives[team_id] = [Vector2i(15, 15)]
 
 func get_primary_objective(team_id: int) -> Vector2i:
 	if team_objectives.has(team_id) and team_objectives[team_id].size() > 0:
 		return team_objectives[team_id][0]
-	return Vector2i(15, 15)  # Fallback
+	return Vector2i(15, 15)
 
-# Position finding methods (to be integrated with pathfinding)
+# Position finding methods
 func find_fallback_position(unit: Unit, enemies: Array[Unit]) -> Vector2i:
-	# Find safe position away from enemies
 	return unit.get_current_position() + Vector2i(-2, -2)
 
 func find_suppression_position(unit: Unit, enemy_pos: Vector2i) -> Vector2i:
-	# Find position with good line of sight to enemy
 	return enemy_pos + Vector2i(2, 2)
 
 func calculate_advance_position(unit: Unit, enemy_pos: Vector2i) -> Vector2i:
-	# Move toward enemy but maintain optimal weapon range
 	return enemy_pos + Vector2i(-3, -3)
 
 func get_advance_position_toward_objective(unit: Unit, objective: Vector2i) -> Vector2i:
-	# Move toward objective but stop at safe distance
 	var direction_vec = Vector2(objective - unit.get_current_position()).normalized()
 	var direction = Vector2i(direction_vec * 4)
 	return unit.get_current_position() + direction
 
 func find_defensive_position(unit: Unit, objective: Vector2i) -> Vector2i:
-	# Find defensible position near objective
 	return objective + Vector2i(2, 0)
 
 func get_recon_position(unit: Unit, enemy_units: Array[Unit]) -> Vector2i:
-	# Move to scout suspected enemy positions
 	if enemy_units.size() > 0:
 		var enemy_pos = enemy_units[0].get_current_position()
 		var direction_vec = Vector2(enemy_pos - unit.get_current_position()).normalized()

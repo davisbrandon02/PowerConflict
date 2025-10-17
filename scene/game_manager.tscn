@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cpw65ojsv65qu"]
+[gd_scene load_steps=17 format=3 uid="uid://cpw65ojsv65qu"]
 
 [ext_resource type="Script" uid="uid://dq3ipe8c5miwy" path="res://script/game_manager.gd" id="1_y6yp7"]
 [ext_resource type="Script" uid="uid://dgiohe3ofmxxg" path="res://script/service/map_manager.gd" id="2_a81tu"]
@@ -10,8 +10,21 @@
 [ext_resource type="Script" uid="uid://dd6wxfp5ykakd" path="res://script/service/ai/tactical_ai_service.gd" id="6_fi3ik"]
 [ext_resource type="Script" uid="uid://bp8nbuw5xrf2y" path="res://scene/ui/ui_manager.gd" id="6_yyxvu"]
 [ext_resource type="Script" uid="uid://c00crv8w8prhn" path="res://script/service/ai/unit_ai_service.gd" id="7_re6s4"]
+[ext_resource type="Texture2D" uid="uid://bwceya2ad0sr6" path="res://asset/overlay/move.png" id="10_r8oq5"]
+[ext_resource type="Texture2D" uid="uid://341eehc5aiau" path="res://asset/overlay/attack.png" id="11_1q0wa"]
+[ext_resource type="Script" uid="uid://d2j7eu7bhx5rn" path="res://script/service/overlay_layer.gd" id="12_1q0wa"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_8hpyf"]
+texture = ExtResource("10_r8oq5")
+0:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gdd3a"]
+texture = ExtResource("11_1q0wa")
+0:0/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_yyxvu"]
+sources/0 = SubResource("TileSetAtlasSource_8hpyf")
+sources/1 = SubResource("TileSetAtlasSource_gdd3a")
 
 [node name="GameManager" type="Node2D" node_paths=PackedStringArray("map_manager", "action_manager")]
 texture_filter = 1
@@ -22,12 +35,14 @@ action_manager = NodePath("Services/ActionManager")
 
 [node name="Services" type="Node2D" parent="."]
 
-[node name="ActionManager" type="Node2D" parent="Services" node_paths=PackedStringArray("game_manager", "ui_manager", "tactical_ai", "unit_ai")]
+[node name="ActionManager" type="Node2D" parent="Services" node_paths=PackedStringArray("game_manager", "map_manager", "ui_manager", "tactical_ai", "unit_ai", "overlay_layer")]
 script = ExtResource("3_05tyy")
 game_manager = NodePath("../..")
+map_manager = NodePath("../../MapManager")
 ui_manager = NodePath("../../CanvasLayer/UIManager")
 tactical_ai = NodePath("../TacticalAIService")
 unit_ai = NodePath("../UnitAIService")
+overlay_layer = NodePath("../../MapManager/OverlayLayer")
 
 [node name="DeadEntityService" type="Node2D" parent="Services"]
 
@@ -44,27 +59,28 @@ script = ExtResource("4_hy1te")
 map_manager = NodePath("../../MapManager")
 ui_manager = NodePath("../../CanvasLayer/UIManager")
 
-[node name="TacticalAIService" type="Node2D" parent="Services" node_paths=PackedStringArray("game_manager", "map_manager", "pathfinding_service")]
+[node name="TacticalAIService" type="Node2D" parent="Services" node_paths=PackedStringArray("game_manager", "map_manager")]
 script = ExtResource("6_fi3ik")
 game_manager = NodePath("../..")
 map_manager = NodePath("../../MapManager")
-pathfinding_service = NodePath("../PathfindingService")
 
-[node name="UnitAIService" type="Node2D" parent="Services" node_paths=PackedStringArray("tactical_ai", "map_manager", "pathfinding_service", "action_manager")]
+[node name="UnitAIService" type="Node2D" parent="Services" node_paths=PackedStringArray("tactical_ai", "map_manager", "action_manager")]
 script = ExtResource("7_re6s4")
 tactical_ai = NodePath("../TacticalAIService")
 map_manager = NodePath("../../MapManager")
-pathfinding_service = NodePath("../PathfindingService")
 action_manager = NodePath("../ActionManager")
 
-[node name="MapManager" type="Node2D" parent="." node_paths=PackedStringArray("obstacles", "units")]
+[node name="MapManager" type="Node2D" parent="." node_paths=PackedStringArray("obstacles", "units", "pathfinding_service")]
 script = ExtResource("2_a81tu")
 obstacles = NodePath("../Entities/Obstacles")
 units = NodePath("../Entities/Units")
+pathfinding_service = NodePath("../Services/PathfindingService")
 
-[node name="OverlayLayer" type="TileMapLayer" parent="MapManager"]
+[node name="OverlayLayer" type="TileMapLayer" parent="MapManager" node_paths=PackedStringArray("map_manager")]
 unique_name_in_owner = true
 tile_set = SubResource("TileSet_yyxvu")
+script = ExtResource("12_1q0wa")
+map_manager = NodePath("..")
 
 [node name="Entities" type="Node2D" parent="."]
 

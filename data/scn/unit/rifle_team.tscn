@@ -7,9 +7,6 @@
 [ext_resource type="PackedScene" uid="uid://bj0x0jo1elf6b" path="res://scene/entity/individual.tscn" id="5_nd1ej"]
 
 [node name="RifleTeam" instance=ExtResource("1_k4qma")]
-unit_type = 0
-movement_range = 10.0
-sight = 15.0
 weapons = Array[ExtResource("2_6ata0")]([ExtResource("3_85qrm")])
 individual_count = 5
 individual_scene = ExtResource("4_nd1ej")

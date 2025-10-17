@@ -11,6 +11,8 @@
 script = ExtResource("2_gfi5q")
 face_dir = Vector2(1, 0)
 unit_type = 0
+current_ap = 2
+max_ap = 2
 movement_range = 10.0
 sight = 15.0
 defense = 10.0

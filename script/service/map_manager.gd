@@ -8,6 +8,8 @@ var current_map: Dictionary = {}
 @export var obstacles: Node2D
 @export var units: Node2D
 
+@export var pathfinding_service: PathfindingService
+
 # Load a map (a Node2D with child TileMapLayers)
 func load_map(map: PackedScene):
 	# Clear current_map
@@ -52,41 +54,93 @@ func load_map(map: PackedScene):
 		# Destroy the old unit
 		u.queue_free()
 
-# Set a unit's position on the map directly and update tracking
-func set_unit_pos(unit: Unit, new_pos: Vector2i) -> bool:
-	# Check if target position is occupied by another living unit
-	if current_map.has(new_pos) and current_map[new_pos].unit != null and current_map[new_pos].unit != unit:
-		if current_map[new_pos].unit.health > 0:
-			print("MAP: Cannot move %s to %s - tile occupied by %s" % [unit.entity_name, new_pos, current_map[new_pos].unit.entity_name])
-			return false
+
+func get_map_pos(pos: Vector2):
+	return %OverlayLayer.local_to_map(pos)
+
+# Get all enemies visible from a given position and unit type
+func get_visible_enemies(from_unit: Unit) -> Array[Unit]:
+	var enemies: Array[Unit] = []
+	var from_pos = from_unit.get_current_position()
 	
+	for other_unit: Unit in units.get_children():
+		if other_unit == from_unit or other_unit.health <= 0 or other_unit.side == from_unit.side:
+			continue
+		
+		var to_pos = other_unit.get_current_position()  # Store in local variable
+		var distance = from_pos.distance_to(to_pos)
+		if distance <= from_unit.sight and has_line_of_sight_from_unit(from_unit, from_pos, to_pos):
+			enemies.append(other_unit)
+	
+	return enemies
+
+# Directly set the position of a unit. All unit position setting should pass through this function
+func set_unit_pos(unit: Unit, pos: Vector2i):
 	# Clear the old position
 	var old_pos = unit.get_current_position()
 	if current_map.has(old_pos) and current_map[old_pos].unit == unit:
 		current_map[old_pos].unit = null
 	
 	# Set the new position
-	unit.set_current_position(new_pos)
+	unit.set_current_position(pos)
 	
 	# Update the unit's visual position
-	var world_pos = %OverlayLayer.map_to_local(new_pos)
+	var world_pos = %OverlayLayer.map_to_local(pos)
 	unit.position = world_pos
 	
 	# Update the map tracking
-	if current_map.has(new_pos):
-		current_map[new_pos].unit = unit
+	if current_map.has(pos):
+		current_map[pos].unit = unit
 	else:
 		# Create new tile if it doesn't exist (shouldn't happen normally)
 		var map_tile = MapTile.new()
-		map_tile.pos = new_pos
+		map_tile.pos = pos
 		map_tile.unit = unit
-		current_map[new_pos] = map_tile
+		current_map[pos] = map_tile
 	
-	print("MAP: Moved %s from %s to %s" % [unit.entity_name, old_pos, new_pos])
+	print("MAP: Moved %s from %s to %s" % [unit.entity_name, old_pos, pos])
 	return true
 
-func get_map_pos(pos: Vector2):
-	return %OverlayLayer.local_to_map(pos)
+# Move unit from one position to another
+func move_unit(unit: Unit, pos: Vector2i):
+	if can_move_to_pos(unit, pos):
+		set_unit_pos(unit, pos)
+
+# Check if MapTile is able to be moved to by unit
+func can_move_to_pos(unit: Unit, pos: Vector2i):
+	if current_map.has(pos):
+		var tile: MapTile = current_map[pos]
+		
+		# Return false if already occupied by a unit
+		if tile.unit != null:
+			return false
+		
+		# Return false if blocked by obstacle
+		if tile.obstacle != null and !matches_movement_type(unit, tile):
+			return false
+		
+		return true
+	return false
+
+# Checks if unit's movement type matches the ground tile
+func matches_movement_type(unit: Unit, tile: MapTile):
+	if tile.obstacle == null:
+		return true
+	
+	match unit.movement_type:
+		Unit.MOVEMENT_TYPE.GROUND:
+			return tile.obstacle.ground_accessible
+		Unit.MOVEMENT_TYPE.WATER:
+			return tile.obstacle.sea_accessible
+		Unit.MOVEMENT_TYPE.AIR:
+			return tile.obstacle.sea_accessible
+		Unit.MOVEMENT_TYPE.AMPHIBIOUS:
+			# Both ground and sea accessible
+			return tile.obstacle.ground_accessible or tile.obstacle.sea_accessible
+
+# Check line of sight from a unit at a specific position to a target position
+func has_line_of_sight_from_unit(from_unit: Unit, from_pos: Vector2i, to_pos: Vector2i) -> bool:
+	return pathfinding_service.has_line_of_sight(from_pos, to_pos, from_unit.unit_type)
 
 # Represents what is currently on a tile
 class MapTile:

@@ -8,6 +8,15 @@ var active: bool = false
 # Order tracking
 var current_order: TacticalOrder = null
 
+# Determines what kind of terrain unit can occupy
+enum MOVEMENT_TYPE {
+	GROUND,
+	WATER,
+	AIR,
+	AMPHIBIOUS,
+}
+@export var movement_type: MOVEMENT_TYPE = MOVEMENT_TYPE.GROUND
+
 # Used by AIService
 enum UNIT_TYPE {
 	INFANTRY,
@@ -17,6 +26,8 @@ enum UNIT_TYPE {
 @export var unit_type: UNIT_TYPE = UNIT_TYPE.INFANTRY
 
 # Represents an acting unit on the map (takes actions through the ActionQueue)
+@export var current_ap: int = 2
+@export var max_ap: int = 2
 @export var movement_range: float = 10.0  # How far this unit can move in one turn
 @export var sight: float = 15  # How far this unit can see
 @export var defense: float = 10.0 # General ability to withstand damage, take cover, etc
@@ -35,8 +46,10 @@ enum UNIT_TYPE {
 func damage(weapon: WeaponType):
 	if weapon.armor_piercing >= armor:
 		health -= weapon.hard_damage
+		print("UNIT: %s %s armor is pierced, taking %s hard damage" % [entity_name, current_position, weapon.hard_damage])
 	else:
 		health -= weapon.soft_damage - armor
+		print("UNIT: %s %s taking %s soft damage" % [entity_name, current_position, str(weapon.soft_damage - armor)])
 
 # Set direction unit is facing
 # Can determine side/rear shots and flanks (mostly on armored vehicles)
@@ -67,7 +80,7 @@ func get_individual_count():
 func get_movement_range() -> float:
 	return movement_range
 
-func attack(target: Unit) -> void:
+func attack(target: Unit, is_aimed: bool) -> void:
 	if weapons.size() > 0 and target:
 		print("COMBAT: %s attacking %s with %s" % [entity_name, target.entity_name, weapons[0].name])
 		target.damage(weapons[0])

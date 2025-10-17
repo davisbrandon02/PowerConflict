@@ -20,6 +20,6 @@ func damage(weapon: WeaponType):
 # Absolutely only ever called by the MapManager
 func set_current_position(pos: Vector2i):
 	current_position = pos
-	
-func get_current_position() -> Vector2i:
+
+func get_current_position():
 	return current_position

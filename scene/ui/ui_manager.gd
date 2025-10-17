@@ -97,6 +97,45 @@ func show_unit_controls(unit: Unit):
 	%EndTurnButton.visible = true
 	%EndTurnButton.disabled = false
 
+# NEW: Update action buttons based on available AP actions
+func update_action_buttons(available_actions: Array):
+	# You'll need to add these buttons to your UI scene and connect them
+	# For now, I'll create a basic implementation
+	
+	# Example button names - adjust based on your actual UI structure
+	var action_buttons = {
+		"MoveHalfButton": ActionManager.ActionType.MOVE_HALF,
+		"MoveFullButton": ActionManager.ActionType.MOVE_FULL,
+		"FireNormalButton": ActionManager.ActionType.FIRE_NORMAL,
+		"FireAimedButton": ActionManager.ActionType.FIRE_AIMED
+	}
+	
+	# Enable/disable buttons based on available actions
+	for button_name in action_buttons:
+		var button = get_node_or_null(button_name)
+		if button:
+			var action_type = action_buttons[button_name]
+			button.visible = (action_type in available_actions)
+			button.disabled = !(action_type in available_actions)
+			
+			# Update tooltips or labels to show AP cost
+			var ap_cost = ActionManager.ACTION_COSTS[action_type]
+			button.tooltip_text = "%s (%d AP)" % [get_action_display_name(action_type), ap_cost]
+
+# NEW: Helper function to get display names for actions
+func get_action_display_name(action_type: ActionManager.ActionType) -> String:
+	match action_type:
+		ActionManager.ActionType.MOVE_HALF:
+			return "Half Move"
+		ActionManager.ActionType.MOVE_FULL:
+			return "Full Move"
+		ActionManager.ActionType.FIRE_NORMAL:
+			return "Normal Fire"
+		ActionManager.ActionType.FIRE_AIMED:
+			return "Aimed Fire"
+		_:
+			return "Unknown Action"
+
 # Hide controls when no player unit is active
 func hide_unit_controls():
 	%ControlPanel.visible = false

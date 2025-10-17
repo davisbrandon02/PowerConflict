@@ -9,7 +9,7 @@ var current_face_direction: Vector2 = Vector2.RIGHT
 	Vector2.DOWN: %DownSprite,
 	Vector2.UP: %UpSprite,
 	Vector2.LEFT: %LeftSprite,
-	Vector2.RIGHT: %RihtSprite,
+	Vector2.RIGHT: %RightSprite,
 }
 
 # Face certain direction
